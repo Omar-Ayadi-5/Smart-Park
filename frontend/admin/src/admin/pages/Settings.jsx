@@ -1,0 +1,114 @@
+import { useState } from "react";
+import Sidebar from "../components/Sidebar";
+import Topbar from "../components/Topbar";
+import "../admin.css";
+import { updateUsername, deleteAccount } from "../../../../shared/services/api";
+
+export default function Settings() {
+  const [username, setUsername] = useState("");
+  const navigate = window.location;
+
+  // 🔁 UPDATE USERNAME
+  const handleUpdate = async () => {
+    if (!username) return alert("Enter a username");
+
+    try {
+      const res = await updateUsername({ username });
+
+      if (res.success) {
+        localStorage.setItem("user", username);
+        alert("Username updated!");
+        window.refresh=""
+      } else {
+        alert(res.error || "Update failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating username");
+    }
+  };
+
+  // 🚪 LOGOUT
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.href = "/";
+  };
+
+  // ❌ DELETE ACCOUNT
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This cannot be undone."
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const res = await deleteAccount();
+
+      if (res.success) {
+        alert("Account deleted");
+        localStorage.clear();
+        window.location.href = "/";
+      } else {
+        alert(res.error || "Delete failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting account");
+    }
+  };
+
+  return (
+    <div className="layout">
+      <Sidebar />
+
+      <main className="main-content">
+        <Topbar />
+
+        <div className="settings-wrapper">
+
+          {/* 🔧 ACCOUNT SETTINGS */}
+          <div className="settings-card">
+            <h3>Account Settings</h3>
+
+            <div className="form-group">
+              <label>Change Username</label>
+              <input
+                type="text"
+                placeholder="New username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
+            </div>
+
+            <button className="btn primary" onClick={handleUpdate}>
+              Update Username
+            </button>
+          </div>
+
+          {/* 🚪 LOGOUT */}
+          <div className="settings-card">
+            <h3>Session</h3>
+
+            <button className="btn secondary" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+
+          {/* ❌ DANGER ZONE */}
+          <div className="settings-card danger-zone">
+            <h3>Danger Zone</h3>
+
+            <p>This action is irreversible.</p>
+
+            <button className="btn danger" onClick={handleDelete}>
+              Delete Account
+            </button>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  );
+}

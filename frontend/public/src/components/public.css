@@ -1,0 +1,400 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@700;800&display=swap");
+
+/* Variables for the public SmartPark page only */
+.smartpark-page {
+  --sp-primary: #38bdf8;
+  --sp-primary-lt: #0ea5e9;
+  --sp-success: #10b981;
+  --sp-danger: #f43f5e;
+  --sp-warning: #fbbf24;
+
+  --sp-bg: #0f172a;
+  --sp-surface: rgba(30, 41, 59, 0.72);
+  --sp-surface-2: rgba(15, 23, 42, 0.68);
+  --sp-text: #f8fafc;
+  --sp-muted: #94a3b8;
+  --sp-border: rgba(255, 255, 255, 0.08);
+
+  --sp-shadow-sm: 0 10px 24px rgba(0, 0, 0, 0.18);
+  --sp-shadow-md: 0 20px 40px rgba(0, 0, 0, 0.22);
+  --sp-shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.28);
+}
+
+.smartpark-page,
+.smartpark-page * {
+  box-sizing: border-box;
+}
+
+.smartpark-page {
+  font-family: "Inter", sans-serif;
+  background: var(--sp-bg);
+  background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.045) 1px, transparent 0);
+  background-size: 40px 40px;
+  color: var(--sp-text);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45);
+  }
+  70% {
+    transform: scale(1.12);
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.96);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+/* Header */
+.smartpark-page .header {
+  text-align: center;
+  margin-bottom: 34px;
+  animation: fadeUp 0.5s ease-out;
+}
+
+.smartpark-page .header h1 {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background: linear-gradient(to right, #ffffff, var(--sp-primary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-size: clamp(30px, 5vw, 46px);
+  margin-bottom: 12px;
+  letter-spacing: -0.03em;
+}
+
+.smartpark-page .live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--sp-surface);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sp-muted);
+  border: 1px solid var(--sp-border);
+  box-shadow: var(--sp-shadow-sm);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.smartpark-page .live-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--sp-success);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+/* Stats */
+.smartpark-page .stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 40px;
+  width: 100%;
+  max-width: 980px;
+  animation: fadeUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.smartpark-page .stat-card {
+  flex: 1;
+  min-width: 180px;
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: 24px;
+  padding: 24px 18px;
+  text-align: center;
+  box-shadow: var(--sp-shadow-md);
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.smartpark-page .stat-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent 55%);
+  pointer-events: none;
+}
+
+.smartpark-page .stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--sp-shadow-lg);
+}
+
+.smartpark-page .stat-card h3 {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: clamp(30px, 6vw, 48px);
+  margin-bottom: 6px;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.smartpark-page .stat-card p {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--sp-muted);
+  font-weight: 700;
+  position: relative;
+  z-index: 1;
+}
+
+.smartpark-page .text-primary {
+  color: var(--sp-primary);
+}
+
+.smartpark-page .text-success {
+  color: var(--sp-success);
+}
+
+.smartpark-page .text-danger {
+  color: var(--sp-danger);
+}
+
+.smartpark-page .text-muted {
+  color: var(--sp-muted);
+}
+
+/* Parking wrapper */
+.smartpark-page .grid-wrapper {
+  width: 100%;
+  max-width: 980px;
+  background: var(--sp-surface);
+  padding: 32px;
+  border-radius: 30px;
+  box-shadow: var(--sp-shadow-md);
+  border: 1px solid var(--sp-border);
+  animation: fadeUp 0.7s ease-out forwards;
+  opacity: 0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.smartpark-page .grid-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px dashed rgba(255,255,255,0.12);
+  gap: 20px;
+}
+
+.smartpark-page .grid-header h2 {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 24px;
+  color: var(--sp-text);
+  margin: 0;
+}
+
+.smartpark-page .grid-header p {
+  font-size: 13px;
+  color: var(--sp-muted);
+  margin-top: 6px;
+}
+
+.smartpark-page .legend {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--sp-text);
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.smartpark-page .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sp-muted);
+}
+
+.smartpark-page .legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.smartpark-page .legend-dot.free {
+  background: var(--sp-success);
+}
+
+.smartpark-page .legend-dot.occ {
+  background: var(--sp-danger);
+}
+
+.smartpark-page .legend-dot.oos {
+  background: repeating-linear-gradient(
+    -45deg,
+    #475569,
+    #475569 3px,
+    #94a3b8 3px,
+    #94a3b8 6px
+  );
+}
+
+/* Grid */
+.smartpark-page .parking-lot {
+  display: grid;
+  grid-template-columns: 1fr 1fr 60px 1fr 1fr;
+  gap: 16px;
+  position: relative;
+}
+
+.smartpark-page .aisle {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.smartpark-page .lane-marker {
+  width: 4px;
+  height: 34px;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,0.08),
+    rgba(255,255,255,0.2),
+    rgba(255,255,255,0.08)
+  );
+  border-radius: 999px;
+}
+
+/* Spots */
+.smartpark-page .spot {
+  height: 74px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-weight: 800;
+  color: white;
+  cursor: default;
+  transition: all 0.22s ease;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: var(--sp-shadow-sm);
+}
+
+.smartpark-page .spot.free {
+  background: linear-gradient(145deg, #10b981 0%, #047857 100%);
+}
+
+.smartpark-page .spot.free:hover {
+  transform: scale(1.03);
+  box-shadow: 0 14px 24px rgba(16, 185, 129, 0.22);
+}
+
+.smartpark-page .spot.occupied {
+  background: linear-gradient(145deg, #f43f5e 0%, #be123c 100%);
+  opacity: 0.92;
+}
+
+.smartpark-page .spot.out-of-service {
+  background: repeating-linear-gradient(
+    -45deg,
+    #475569,
+    #475569 6px,
+    #94a3b8 6px,
+    #94a3b8 12px
+  );
+  color: rgba(255, 255, 255, 0.96);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .smartpark-page {
+    padding: 18px 12px;
+  }
+
+  .smartpark-page .stats-container {
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .smartpark-page .stat-card {
+    flex: 1 1 calc(50% - 10px);
+    min-width: 140px;
+    padding: 18px 14px;
+  }
+
+  .smartpark-page .grid-wrapper {
+    padding: 18px;
+  }
+
+  .smartpark-page .grid-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .smartpark-page .parking-lot {
+    grid-template-columns: 1fr 1fr 40px 1fr 1fr;
+    gap: 10px;
+    transform: scale(0.8);
+    transform-origin: top center;
+    width: 128%;
+    margin-left: -14%;
+  }
+
+  .smartpark-page .aisle {
+    display: flex;
+  }
+
+  .smartpark-page .lane-marker {
+    height: 22px;
+  }
+
+  .smartpark-page .spot {
+    height: 56px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
+  .smartpark-page .legend {
+    gap: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .smartpark-page .stat-card {
+    flex: 1 1 100%;
+  }
+
+  .smartpark-page .header h1 {
+    font-size: 30px;
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "smart-park-admin",
+  "private": true,
+  "scripts": {
+    "setup": "npm install --prefix ./src && npm install --prefix ../shared",
+    "dev": "npm --prefix ./src run dev",
+    "build": "npm --prefix ./src run build",
+    "preview": "npm --prefix ./src run preview",
+    "lint": "npm --prefix ./src run lint",
+    "install-deps": "npm install --prefix ./src"
+  }
+}

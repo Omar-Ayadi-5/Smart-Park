@@ -1,0 +1,62 @@
+/* ─── TOPBAR ─── */
+.topbar {
+    height: 70px;
+    background: var(--surface, #ffffff);
+    border-bottom: 1px solid var(--border, #DDE3EE);
+  
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  
+    padding: 0 30px;
+  }
+  
+  /* TITLE */
+  .topbar h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 25px;
+    font-weight: 700;
+    color: var(--text, #1A1D2E);
+  }
+  
+  /* PROFILE SECTION */
+  .admin-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--text);
+  }
+  
+  /* USER NAME */
+  .admin-profile span {
+    opacity: 0.85;
+  }
+  
+  /* AVATAR */
+  .avatar {
+    width: 38px;
+    height: 38px;
+  
+    background: linear-gradient(135deg, var(--primary), var(--primary-lt));
+    color: #fff;
+  
+    border-radius: 50%;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+  
+    transition: 0.2s ease;
+  }
+  
+  /* HOVER EFFECT */
+  .avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  }
