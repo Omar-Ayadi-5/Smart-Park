@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import "../admin.css";
-import { dashboardData } from "../../../../shared/services/api";
+import { dashboardData } from "@smart-park/shared/services/api";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip,
   PieChart, Pie, Cell, Legend,

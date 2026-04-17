@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./public.css";
-import { getPublicDashboard } from "../../../shared/services/api";
+import { getPublicDashboard } from "@smart-park/shared/services/api";
 
 function ParkingSpot({ code, status }) {
   const isFree = status === "FREE";

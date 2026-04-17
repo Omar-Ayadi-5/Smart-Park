@@ -3,7 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import "../admin.css";
 
-import { getPublicDashboard, toggleSpotOOS } from "../../../../shared/services/api";
+import { getPublicDashboard, toggleSpotOOS } from "@smart-park/shared/services/api";
 
 function ParkingSpot({ id, code, status, onClick }) {
   const isFree = status === "FREE";

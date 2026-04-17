@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginAdmin, registerAdmin } from '../../../shared/services/api';
+import { loginAdmin, registerAdmin } from '@smart-park/shared/services/api';
 import './auth.css';
 
 export default function AuthForm() {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { subscribeApiLoading } from "../../../shared/services/apiLoadingStore";
+import { subscribeApiLoading } from "@smart-park/shared/services/apiLoadingStore";
 
 export default function GlobalApiLoadingOverlay() {
   const [active, setActive] = useState(false);

@@ -2,7 +2,7 @@ import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import "../admin.css";
-import { updateUsername, deleteAccount } from "../../../../shared/services/api";
+import { updateUsername, deleteAccount } from "@smart-park/shared/services/api";
 
 export default function Settings() {
   const [username, setUsername] = useState("");

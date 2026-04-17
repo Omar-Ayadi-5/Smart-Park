@@ -6,7 +6,7 @@ import {
     getAdmins,
     approveAdmin,
     deleteAdmin
-} from "../../../../shared/services/api";
+} from "@smart-park/shared/services/api";
 
 export default function Users() {
     const [admins, setAdmins] = useState([]);
