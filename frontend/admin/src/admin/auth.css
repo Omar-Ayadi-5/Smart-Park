@@ -1,50 +1,86 @@
+/* Palette aligned with admin.css :root */
 .auth-container {
-  height: 100vh;
+  --bg: #0f172a;
+  --text: #f8fafc;
+  --text-soft: #cbd5e1;
+  --text-muted: #94a3b8;
+  --primary: #38bdf8;
+  --primary-lt: #0ea5e9;
+  --secondary: #fbbf24;
+  --success: #10b981;
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow-md: 0 18px 40px rgba(0, 0, 0, 0.22);
+
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: clamp(16px, 4vw, 32px);
+
   background: var(--bg);
+  background-image: radial-gradient(circle at 2px 2px, rgba(255, 255, 255, 0.045) 1px, transparent 0);
+  background-size: 40px 40px;
 }
 
 .auth-form {
-  background: white;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  background: #fff;
   padding: 40px;
-  border-radius: 12px;
-  width: 360px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border-radius: 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .auth-form h2 {
   text-align: center;
-  margin-bottom: 20px;
-  color: var(--text);
+  margin: 0 0 24px;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--secondary);
 }
 
 .auth-form input {
-  width: 95%;
-  padding: 12px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
   margin-bottom: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+.auth-form input:focus {
+  outline: 2px solid rgba(56, 189, 248, 0.35);
+  outline-offset: 0;
+  border-color: var(--primary);
 }
 
 .auth-button {
-  width: 80%;
+  display: block;
+  width: 100%;
+  max-width: 100%;
   padding: 12px;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
-  color: white;
-  font-weight: bold;
-  margin-left: 40px;
+  color: #02131d;
+  font-weight: 700;
+  margin: 4px 0 0;
 }
 
 .auth-button.primary {
-  background: var(--primary);
+  background: linear-gradient(135deg, var(--primary), var(--primary-lt));
 }
 
 .auth-button.primary:hover {
-  background: var(--primary-lt);
+  filter: brightness(1.05);
+  box-shadow: 0 10px 24px rgba(56, 189, 248, 0.28);
 }
 
 .auth-button.success {
@@ -56,14 +92,20 @@
 }
 
 .toggle-text {
-  margin-top: 15px;
+  margin-top: 18px;
   text-align: center;
+  font-size: 0.95rem;
+  color: var(--text-muted);
 }
 
 .toggle-text span {
   color: var(--primary);
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 700;
+}
+
+.toggle-text span:hover {
+  color: var(--primary-lt);
 }
 
 .info-text {
