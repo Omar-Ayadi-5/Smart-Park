@@ -38,6 +38,8 @@ export default function AdminParking() {
 
   const loadData = async () => {
     try {
+      // On réutilise l’endpoint public pour dessiner la grille,
+      // afin d’avoir une seule source de vérité pour le layout (rows gauche/droite).
       const data = await getPublicDashboard();
 
       setStats({
@@ -60,11 +62,14 @@ export default function AdminParking() {
 
   const handleSpotClick = async (id, status) => {
     try {
+      // On bloque aussi côté UI la modif d’une place occupée,
+      // même si le backend applique déjà la règle métier.
       if (status === "OCCUPIED") {
         alert("Cannot modify occupied spot");
         return;
       }
 
+      // Endpoint admin protégé: bascule OUT_OF_SERVICE ↔ FREE.
       const res = await toggleSpotOOS(id);
 
       if (res.success) {

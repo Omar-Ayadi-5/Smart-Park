@@ -67,6 +67,7 @@ export default function Sidebar() {
   return (
     <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
       <div className="sidebar-header">
+        {/* Brand cliquable: renvoie au dashboard sans recharger l’app */}
         {!collapsed ? (
           <button type="button" className="sidebar-brand" onClick={() => navigate("/admin/dashboard")}>
             <span className="sidebar-logo-mark">SP</span>
@@ -83,6 +84,7 @@ export default function Sidebar() {
         <button
           type="button"
           className="sidebar-toggle"
+          // Mode "collapsed" = barre latérale compacte (icônes seulement)
           onClick={() => setCollapsed((c) => !c)}
           aria-expanded={!collapsed}
           aria-label={collapsed ? "Expand navigation" : "Collapse navigation"}
@@ -94,6 +96,7 @@ export default function Sidebar() {
       <nav className="sidebar-nav" aria-label="Admin">
         {!collapsed && <p className="sidebar-nav-heading">Navigation</p>}
         <ul className="sidebar-nav-list">
+          {/* `NavLink` gère la classe "active" en fonction de la route courante */}
           {navItems.map(({ to, label, title, icon }) => (
             <li key={to}>
               <NavLink

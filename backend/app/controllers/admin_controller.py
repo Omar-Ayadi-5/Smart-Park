@@ -7,6 +7,11 @@ import jwt
 from flask import current_app, g
 # REGISTER
 def register_admin(data):
+    """
+    Création d’un compte admin.
+    Note: l’approbation (is_approved) est gérée séparément (super_admin),
+    donc l’inscription ne donne pas automatiquement accès au dashboard.
+    """
     email = data.get("email")
     password = data.get("password")
     username = data.get("username")
@@ -34,6 +39,11 @@ def register_admin(data):
 
 # LOGIN
 def login_admin(data):
+    """
+    Authentification admin.
+    - Vérifie l’existence du compte, le mot de passe, puis l’approbation.
+    - Émet un JWT signé avec expiration (24h) utilisé en Bearer token.
+    """
     email = data.get("email")
     password = data.get("password")
 
@@ -50,6 +60,8 @@ def login_admin(data):
             "error": "Account pending approval. Contact super admin."
         }, 403
     
+    # Le payload JWT contient le minimum utile à l’API (id + rôle),
+    # et permet à `token_required` d’hydrater `g` pour l’autorisation.
     payload = {
         "admin_id": admin.id,
         "username": admin.username,
@@ -79,6 +91,7 @@ def get_dashboard_data():
         # =============================
         # KPI DATA
         # =============================
+        # KPI globaux calculés depuis l’état courant des places.
         total_spots = db.session.query(func.count(ParkingSpot.id)).scalar()
 
         available_spots = db.session.query(func.count(ParkingSpot.id)) \
@@ -97,6 +110,7 @@ def get_dashboard_data():
         # =============================
         # BAR CHART → by zone
         # =============================
+        # Pour le graphe "occupation par zone", on calcule un taux (occupied/total) par zone_id.
         zones = db.session.query(
             ParkingSpot.zone_id,
             func.count(ParkingSpot.id).label("total"),
@@ -116,6 +130,8 @@ def get_dashboard_data():
         # =============================
         # TIMEZONE CONVERSION (UTC → UTC+1)
         # =============================
+        # Les timestamps sont stockés en UTC. On convertit à UTC+1 pour des graphiques "humains".
+        # Attention: ceci ne gère pas l’heure d’été (DST) — c’est un choix de simplicité.
         local_time = func.timezone('UTC', SpotHistory.changed_at) + timedelta(hours=1)
 
         # =============================
@@ -165,6 +181,7 @@ def get_dashboard_data():
         # =============================
         # HEATMAP (Mon → Today)
         # =============================
+        # Heatmap: distribution des arrivées (passages en OCCUPIED) par jour/heure depuis lundi.
         today = datetime.utcnow()
         weekday = today.weekday()
         start_of_week = today - timedelta(days=weekday)
@@ -182,7 +199,7 @@ def get_dashboard_data():
             extract("hour", local_time)
         ).all()
 
-        # normalize Monday = 0
+        # Normalisation: selon la DB, dow peut être 0=Dimanche; on remappe pour avoir Lundi=0.
         heatmap_data = [
             {
                 "day": (int(h.day) - 1) % 7,
@@ -192,7 +209,8 @@ def get_dashboard_data():
             for h in heatmap
         ]
 
-        # fill full grid
+        # On renvoie une grille complète (7x24) pour simplifier le rendu côté frontend
+        # (pas besoin de combler les trous).
         full_heatmap = []
 
         for day in range(7):
@@ -260,6 +278,7 @@ def delete_admin(admin_id):
         if not admin:
             return {"error": "Admin not found"}, 404
 
+        # Suppression directe: si tu veux un “soft delete”, il faudra ajouter un flag en DB.
         db.session.delete(admin)
         db.session.commit()
 
@@ -288,6 +307,7 @@ def approve_admin(admin_id):
     if not admin:
         return {"error": "Not found"}, 404
 
+    # L’approbation débloque le login (voir `login_admin`).
     admin.is_approved = True
     db.session.commit()
 
@@ -302,11 +322,12 @@ def toggle_spot_oos(spot_id):
 
         old_status = spot.status
 
-        # ❌ block occupied
+        # Règle métier: on ne permet pas de mettre une place OCCUPIED en “hors service”
+        # pour éviter des incohérences (voiture présente mais place désactivée).
         if old_status == "OCCUPIED":
             return {"error": "Cannot modify occupied spot"}, 400
 
-        # 🔁 toggle logic
+        # Bascule: OUT_OF_SERVICE ↔ FREE uniquement.
         if old_status == "OUT_OF_SERVICE":
             new_status = "FREE"
             note = "Restored to service by admin"
@@ -324,7 +345,8 @@ def toggle_spot_oos(spot_id):
             source="ADMIN",
             note=note,
             spot_id=spot.id,
-            changed_by_admin_id=g.admin_id  # ✅ from JWT
+            # `g.admin_id` vient du JWT (middleware `token_required`).
+            changed_by_admin_id=g.admin_id
         )
 
         db.session.add(history)

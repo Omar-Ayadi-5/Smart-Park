@@ -26,6 +26,8 @@ export default function AuthForm() {
   // 🔐 LOGIN
   const handleLogin = async () => {
   try {
+    // Login → réception d’un JWT + infos user.
+    // On stocke en localStorage car les appels API (axios interceptor) lisent le token ici.
     const data = await loginAdmin(
       formData.email,
       formData.password,
@@ -45,6 +47,7 @@ export default function AuthForm() {
   } catch (err) {
     console.error(err);
     if (err.response?.status === 403) {
+      // Cas métier: compte créé mais pas encore approuvé par le super admin.
       alert("Your account is waiting for approval by the super admin.");
     }
     else{
@@ -61,6 +64,7 @@ export default function AuthForm() {
   }
 
   try {
+    // Inscription → le backend renvoie success=true si création OK.
     const data = await registerAdmin(
       formData.email,
       formData.password,
@@ -82,6 +86,7 @@ export default function AuthForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Soumission: selon le mode, on déclenche l’action correspondante.
     if (isSignUp) {
       await handleRegister();
     } else {

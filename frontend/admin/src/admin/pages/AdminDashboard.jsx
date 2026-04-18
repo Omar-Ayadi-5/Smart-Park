@@ -16,6 +16,8 @@ const HEATMAP_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function Dashboard() {
 
+  // `pageData` correspond directement à la réponse du backend (`/api/admin/dashboard`).
+  // On initialise avec des valeurs neutres pour éviter les "undefined" au premier rendu.
   const [pageData, setPageData] = useState({
     totalSpots: 0,
     availableSpots: 0,
@@ -35,6 +37,8 @@ export default function Dashboard() {
         return;
       }
       if (data) {
+        // On merge: le backend renvoie aussi des structures optionnelles (`zones`, `heatmap`, etc.)
+        // et on veut conserver les clés existantes si certaines ne sont pas présentes.
         setPageData((prev) => ({ ...prev, ...data }));
       } else {
         alert("Invalid dashboard load");
@@ -226,6 +230,8 @@ export default function Dashboard() {
                 <div className="heatmap-grid">
                   {Array.from({ length: 7 }).flatMap((_, day) =>
                     Array.from({ length: 24 }).map((_, hour) => {
+                      // Le backend renvoie une grille 7x24 (day=0..6, hour=0..23).
+                      // On retrouve la cellule correspondante pour calculer son "niveau" visuel.
                       const cell = pageData.heatmap?.find(
                         d => d.day === day && d.hour === hour
                       );

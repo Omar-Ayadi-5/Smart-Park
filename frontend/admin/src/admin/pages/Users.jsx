@@ -15,6 +15,8 @@ export default function Users() {
   
     const loadAdmins = async () => {
       try {
+        // La route backend applique déjà un contrôle RBAC,
+        // mais on adapte aussi l’UI en fonction du rôle côté client.
         const data = await getAdmins();
         setAdmins(data);
       } catch (err) {
@@ -27,6 +29,7 @@ export default function Users() {
     }, []);
   
     const handleApprove = async (id) => {
+      // Action réservée au super_admin (le bouton n’est rendu que pour ce rôle).
       const res = await approveAdmin(id);
       if (res.success) loadAdmins();
     };
@@ -37,6 +40,8 @@ export default function Users() {
       if (res.success) loadAdmins();
     };
   
+    // On sépare "pending" vs "approved" pour un affichage plus lisible
+    // et pour éviter de mélanger les comptes non validés avec les actifs.
     const pending = admins.filter(a => !a.is_approved);
     const approved = admins.filter(a => a.is_approved);
   

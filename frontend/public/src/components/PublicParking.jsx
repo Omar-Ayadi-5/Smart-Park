@@ -19,6 +19,8 @@ function ParkingSpot({ code, status }) {
 }
 
 export default function SmartParkDashboard() {
+  // `stats` est volontairement un tableau (plutôt qu’un objet) pour simplifier le rendu
+  // via `map()` et garder un ordre d’affichage stable dans l’UI.
   const [stats, setStats] = useState([
     { value: 0, label: "Total Spots", className: "text-primary" },
     { value: 0, label: "Available", className: "text-success" },
@@ -30,6 +32,8 @@ export default function SmartParkDashboard() {
 
   const loadData = async () => {
     try {
+      // Dashboard public: ne nécessite pas d’authentification, mais doit rester robuste
+      // (ex: backend indisponible → on garde la page affichée et on signale l’erreur).
       const data = await getPublicDashboard();
 
       setStats([
@@ -39,6 +43,8 @@ export default function SmartParkDashboard() {
         { value: data.outOfServiceSpots ?? 0, label: "Out of Service", className: "text-muted" },
       ]);
 
+      // Le backend renvoie des "rows" (gauche/droite) déjà prêtes pour l’affichage
+      // afin d’éviter de dupliquer la logique de mise en page côté frontend.
       setParkingRows(data.rows || []);
     } catch (err) {
       console.error(err);
@@ -47,6 +53,8 @@ export default function SmartParkDashboard() {
   };
 
   useEffect(() => {
+    // Chargement initial + rafraîchissement périodique.
+    // 180000ms = 3 minutes: compromis entre “quasi temps réel” et charge serveur.
     loadData();
 
     const interval = setInterval(loadData, 180000);

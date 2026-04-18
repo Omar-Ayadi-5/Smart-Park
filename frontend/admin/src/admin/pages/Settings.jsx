@@ -6,7 +6,6 @@ import { updateUsername, deleteAccount } from "@smart-park/shared/services/api";
 
 export default function Settings() {
   const [username, setUsername] = useState("");
-  const navigate = window.location;
 
   // 🔁 UPDATE USERNAME
   const handleUpdate = async () => {
@@ -16,9 +15,12 @@ export default function Settings() {
       const res = await updateUsername({ username });
 
       if (res.success) {
+        // On met à jour le storage local pour refléter immédiatement le changement
+        // dans les composants qui lisent `localStorage` (ex: Topbar).
         localStorage.setItem("user", username);
         alert("Username updated!");
-        window.refresh=""
+        // Recharge simple pour resynchroniser les composants sans state global.
+        window.location.reload();
       } else {
         alert(res.error || "Update failed");
       }
@@ -30,6 +32,7 @@ export default function Settings() {
 
   // 🚪 LOGOUT
   const handleLogout = () => {
+    // Nettoyage minimal de session côté client.
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     window.location.href = "/";
@@ -37,6 +40,7 @@ export default function Settings() {
 
   // ❌ DELETE ACCOUNT
   const handleDelete = async () => {
+    // Action destructive: on force une confirmation explicite.
     const confirmDelete = window.confirm(
       "Are you sure you want to delete your account? This cannot be undone."
     );

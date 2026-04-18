@@ -11,4 +11,5 @@ class ParkingZone(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relationship
+    # Une zone contient plusieurs places.
     spots = db.relationship("ParkingSpot", backref="zone", lazy=True)

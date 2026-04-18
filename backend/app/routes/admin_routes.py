@@ -6,6 +6,7 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 
 @admin_bp.route("/register", methods=["POST"])
 def register():
+    # Inscription d’un compte admin (créé en base mais potentiellement non approuvé).
     data = request.get_json()
     response, status = register_admin(data)
     return jsonify(response), status
@@ -13,6 +14,7 @@ def register():
 
 @admin_bp.route("/login", methods=["POST"])
 def login():
+    # Authentification: retourne un JWT (Bearer) à stocker côté client.
     data = request.get_json()
     response, status = login_admin(data)
     return jsonify(response), status
@@ -21,6 +23,7 @@ def login():
 @admin_bp.route("/dashboard", methods=["GET"])
 @token_required
 def dashboard():
+    # Endpoint protégé: nécessite un JWT valide. Les KPI retournés servent au dashboard admin.
     data = get_dashboard_data()
     return jsonify(data)
 
@@ -29,6 +32,7 @@ def dashboard():
 def update_username_route():
     data = request.get_json()
 
+    # `token_required` hydrate `g` (admin_id/role/...) à partir du JWT.
     admin_id = g.admin_id
 
     response, status = update_username(admin_id, data)
@@ -46,6 +50,7 @@ def delete_account_route():
 @admin_bp.route("/get-admins", methods=["GET"])
 @token_required
 def admins():
+    # Lecture de la liste des comptes: autorisée pour admin et super_admin uniquement.
     if g.role not in ["admin","super_admin"]:
         return {"error": "Forbidden"}, 403
 
@@ -55,6 +60,7 @@ def admins():
 @admin_bp.route("/approve-admin/<int:id>", methods=["PUT"])
 @token_required
 def approve(id):
+    # Approbation: réservée au super_admin (contrôle RBAC minimal côté route).
     if g.role != "super_admin":
         return {"error": "Forbidden"}, 403
 
@@ -64,6 +70,7 @@ def approve(id):
 @admin_bp.route("/delete-admin/<int:id>", methods=["DELETE"])
 @token_required
 def delete(id):
+    # Suppression d’un compte admin: réservée au super_admin.
     if g.role != "super_admin":
         return {"error": "Forbidden"}, 403
 
@@ -73,6 +80,7 @@ def delete(id):
 @token_required
 def change_state(spot_id):
 
+    # Bascule “Out of service” ↔ “Free” autorisée pour admin/super_admin.
     if g.role not in ["super_admin", "admin"]:
         return {"error": "Forbidden"}, 403
 

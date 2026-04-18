@@ -9,6 +9,14 @@ load_dotenv()
 db = SQLAlchemy()
 
 def create_app():
+    """
+    Factory Flask.
+
+    - Charge la config (`Config`), initialise SQLAlchemy, CORS
+    - Enregistre les blueprints API (`/api/parking`, `/api/admin`)
+
+    Ce pattern facilite les tests et évite les effets de bord à l’import.
+    """
     app = Flask(__name__)
     app.config.from_object("app.config.Config")
 

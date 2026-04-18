@@ -13,6 +13,8 @@ const api = axios.create({
 });
 
 function applyAuthHeader(config) {
+  // Le token est stocké côté navigateur après login admin.
+  // On l’injecte systématiquement si présent pour les endpoints protégés.
   const token = localStorage.getItem("token");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -22,6 +24,8 @@ function applyAuthHeader(config) {
 
 function finishTrackedRequest(config) {
   if (config?.skipGlobalLoading) return;
+  // On termine *toujours* le suivi global, même en cas d’erreur,
+  // et on libère le mutex pour permettre à la requête suivante d’avancer.
   endApiLoading();
   config?.__releaseApiMutex?.();
 }
@@ -29,14 +33,18 @@ function finishTrackedRequest(config) {
 api.interceptors.request.use(
   async (config) => {
     if (config.skipGlobalLoading) {
+      // Certains appels “silencieux” ne doivent pas bloquer l’UI globale
+      // (ex: auto-refresh, pré-chargements, etc.).
       return applyAuthHeader(config);
     }
     beginApiLoading();
+    // Mutex: garantit qu’une seule requête “global loading” est active à la fois.
     const releaseMutex = await acquireApiMutex();
     config.__releaseApiMutex = releaseMutex;
     try {
       return applyAuthHeader(config);
     } catch (e) {
+      // Si une exception survient avant l’envoi HTTP, on doit nettoyer le tracking.
       endApiLoading();
       releaseMutex();
       throw e;
@@ -54,6 +62,7 @@ api.interceptors.response.use(
     finishTrackedRequest(error.config);
     const status = error.response?.status;
     if (status === 401) {
+      // Stratégie simple: invalider la session locale si le backend refuse le token.
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("email");
@@ -106,6 +115,7 @@ export const deleteAdmin = async (id) => {
 };
 
 export const getPublicDashboard = async () => {
+  // Endpoint public: pas de token requis.
   const res = await api.get("/parking/dashboard"); 
   return res.data;
 };
