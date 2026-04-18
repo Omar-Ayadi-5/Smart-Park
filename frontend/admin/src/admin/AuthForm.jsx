@@ -121,9 +121,8 @@ export default function AuthForm() {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
-          //minLength={8}
+          minLength={8}
           maxLength={16}
-          //pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$"
           required
         />
 
