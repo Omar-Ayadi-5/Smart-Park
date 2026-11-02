@@ -1,0 +1,177 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
+
+// ====== PINS ======
+#define echoPin 18
+#define trigPin 5
+#define RED_LED 22
+#define GREEN_LED 21
+
+// ====== WIFI ======
+const char* ssid = "ghassen";
+const char* password = "kreemy000";
+
+// ====== SUPABASE ======
+const char* supabaseUrl = "";
+const char* supabaseKey = "";
+
+// ====== LOGIC ======
+const float OCCUPIED_THRESHOLD = 10.0;
+const float FREE_THRESHOLD = 20.0;
+const unsigned long STABLE_TIME = 15000; // 🔥 15 seconds
+
+float distance;
+
+bool currentState = false;
+bool candidateState = false;
+
+unsigned long stateChangeStart = 0;
+bool timerRunning = false;
+
+unsigned long lastSend = 0;
+const unsigned long MIN_INTERVAL = 3000;
+
+WiFiClientSecure client;
+
+// ====== SENSOR ======
+float readDistance() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  long d = pulseIn(echoPin, HIGH, 30000);
+  if (d == 0) return -1;
+
+  return d / 58.2;
+}
+
+// ====== WIFI ======
+void connectWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.setSleep(false);
+  WiFi.begin(ssid, password);
+
+  Serial.print("Connecting...");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nWiFi ready");
+}
+
+// ====== SEND ======
+bool sendToSupabase(bool state) {
+  if (WiFi.status() != WL_CONNECTED) return false;
+
+  HTTPClient http;
+  client.setInsecure();
+
+  String url = String(supabaseUrl) + "/rest/v1/rpc/sync_spot_2";
+
+  if (!http.begin(client, url)) return false;
+
+  http.setTimeout(3000);
+
+  http.addHeader("Content-Type", "application/json");
+  http.addHeader("apikey", supabaseKey);
+  http.addHeader("Authorization", String("Bearer ") + supabaseKey);
+
+  String body = String("{\"p_detected\":") + (state ? "true" : "false") + "}";
+
+  int code = http.POST(body);
+
+  Serial.print("HTTP: ");
+  Serial.println(code);
+
+  http.end();
+
+  return (code >= 200 && code < 300);
+}
+
+// ====== LED ======
+void setLED(bool state) {
+  if (state) {
+    digitalWrite(RED_LED, LOW);
+    digitalWrite(GREEN_LED, HIGH);
+  } else {
+    digitalWrite(RED_LED, HIGH);
+    digitalWrite(GREEN_LED, LOW);
+  }
+}
+
+// ====== SETUP ======
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  pinMode(RED_LED, OUTPUT);
+  pinMode(GREEN_LED, OUTPUT);
+
+  setLED(false);
+
+  connectWiFi();
+}
+
+// ====== LOOP ======
+void loop() {
+  distance = readDistance();
+
+  Serial.print("Distance: ");
+  Serial.println(distance);
+
+  bool newDetectedState = currentState;
+
+  if (distance > 0) {
+    if (distance <= OCCUPIED_THRESHOLD) newDetectedState = true;
+    else if (distance > FREE_THRESHOLD) newDetectedState = false;
+  }
+
+  // ====== STABILITY LOGIC ======
+  if (newDetectedState != currentState) {
+
+    // Start timer if not already running
+    if (!timerRunning) {
+      candidateState = newDetectedState;
+      stateChangeStart = millis();
+      timerRunning = true;
+
+      Serial.println("State change detected -> waiting 15s...");
+    }
+
+    // If still same candidate → check time
+    if (candidateState == newDetectedState) {
+      if (millis() - stateChangeStart >= STABLE_TIME) {
+
+        Serial.println("State confirmed after 15s");
+
+        if (millis() - lastSend > MIN_INTERVAL) {
+          if (sendToSupabase(candidateState)) {
+            currentState = candidateState;
+            lastSend = millis();
+          }
+        }
+
+        timerRunning = false;
+      }
+    } else {
+      // Changed again → reset timer
+      timerRunning = false;
+    }
+
+  } else {
+    timerRunning = false;
+  }
+
+  Serial.print("Final State: ");
+  Serial.println(currentState ? "OCCUPIED" : "FREE");
+
+  setLED(currentState);
+
+  delay(200);
+  yield();
+}
